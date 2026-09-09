@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.folimeld_android"
+    namespace = "com.tyamada.folimeld"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.example.folimeld_android"
+        applicationId = "com.tyamada.folimeld"
         minSdk = 24
         targetSdk = 37
         versionCode = 1
