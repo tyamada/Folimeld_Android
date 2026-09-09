@@ -11,12 +11,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.os.LocaleListCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.tyamada.folimeld.domain.repository.SettingsRepository
 import com.tyamada.folimeld.ui.main.AboutScreen
 import com.tyamada.folimeld.ui.main.MainScreen
 import com.tyamada.folimeld.ui.main.MainViewModel
@@ -24,30 +26,30 @@ import com.tyamada.folimeld.ui.main.SupportScreen
 import com.tyamada.folimeld.ui.properties.PropertiesScreen
 import com.tyamada.folimeld.ui.theme.Folimeld_AndroidTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var settingsRepository: SettingsRepository
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Apply saved locale before anything else
-        val savedLang = runBlocking { settingsRepository.language.first() }
-        val appLocale: LocaleListCompat = if (savedLang.isNullOrEmpty()) {
-            LocaleListCompat.getEmptyLocaleList()
-        } else {
-            LocaleListCompat.forLanguageTags(savedLang)
-        }
-        AppCompatDelegate.setApplicationLocales(appLocale)
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             val mainViewModel: MainViewModel = hiltViewModel()
+            val currentLanguage by mainViewModel.language.collectAsState()
+
+            // Update app locale when language preference changes
+            LaunchedEffect(currentLanguage) {
+                val appLocale: LocaleListCompat = if (currentLanguage.isNullOrEmpty()) {
+                    LocaleListCompat.getEmptyLocaleList()
+                } else {
+                    LocaleListCompat.forLanguageTags(currentLanguage)
+                }
+                
+                if (AppCompatDelegate.getApplicationLocales() != appLocale) {
+                    AppCompatDelegate.setApplicationLocales(appLocale)
+                }
+            }
+
             Folimeld_AndroidTheme {
                 FolimeldApp(mainViewModel)
             }
