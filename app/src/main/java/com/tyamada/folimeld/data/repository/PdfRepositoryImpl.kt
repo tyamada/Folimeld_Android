@@ -21,6 +21,7 @@ import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPage
 import com.tom_roush.pdfbox.pdmodel.encryption.AccessPermission
 import com.tom_roush.pdfbox.pdmodel.encryption.StandardProtectionPolicy
+import com.tom_roush.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -146,9 +147,11 @@ class PdfRepositoryImpl @Inject constructor(
         )
 
         val details = try {
+            val layout = mapPageLayout(doc.documentCatalog.pageLayout?.name)
             PdfDetails(
                 version = doc.version.toString(),
-                pageLayout = mapPageLayout(doc.documentCatalog.pageLayout?.name),
+                pageLayout = layout,
+                isCoverPage = layout == PageLayout.TwoColumnRight || layout == PageLayout.TwoPageRight,
                 isRightToLeft = doc.documentCatalog.viewerPreferences?.getReadingDirection() == "R2L"
             )
         } catch (e: Exception) {
@@ -161,13 +164,13 @@ class PdfRepositoryImpl @Inject constructor(
     }
 
     private fun mapPageLayout(name: String?): PageLayout {
-        return when (name) {
-            "SinglePage" -> PageLayout.SinglePage
-            "OneColumn" -> PageLayout.OneColumn
-            "TwoColumnLeft" -> PageLayout.TwoColumnLeft
-            "TwoColumnRight" -> PageLayout.TwoColumnRight
-            "TwoPageLeft" -> PageLayout.TwoPageLeft
-            "TwoPageRight" -> PageLayout.TwoPageRight
+        return when (name?.uppercase()) {
+            "SINGLEPAGE", "SINGLE_PAGE" -> PageLayout.SinglePage
+            "ONECOLUMN", "ONE_COLUMN" -> PageLayout.OneColumn
+            "TWOCOLUMNLEFT", "TWO_COLUMN_LEFT" -> PageLayout.TwoColumnLeft
+            "TWOCOLUMNRIGHT", "TWO_COLUMN_RIGHT" -> PageLayout.TwoColumnRight
+            "TWOPAGELEFT", "TWO_PAGE_LEFT" -> PageLayout.TwoPageLeft
+            "TWOPAGERIGHT", "TWO_PAGE_RIGHT" -> PageLayout.TwoPageRight
             else -> PageLayout.SinglePage
         }
     }
@@ -421,7 +424,24 @@ class PdfRepositoryImpl @Inject constructor(
             try {
                 Log.d(TAG, "Updating details: $details")
                 val doc = currentDocument ?: return@withContext Result.failure(Exception("No document open"))
-                // Implementation for details update
+                
+                doc.version = details.version.toFloatOrNull() ?: doc.version
+                
+                val catalog = doc.documentCatalog
+                catalog.pageLayout = when (details.pageLayout) {
+                    PageLayout.SinglePage -> com.tom_roush.pdfbox.pdmodel.PageLayout.SINGLE_PAGE
+                    PageLayout.OneColumn -> com.tom_roush.pdfbox.pdmodel.PageLayout.ONE_COLUMN
+                    PageLayout.TwoColumnLeft -> com.tom_roush.pdfbox.pdmodel.PageLayout.TWO_COLUMN_LEFT
+                    PageLayout.TwoColumnRight -> com.tom_roush.pdfbox.pdmodel.PageLayout.TWO_COLUMN_RIGHT
+                    PageLayout.TwoPageLeft -> com.tom_roush.pdfbox.pdmodel.PageLayout.TWO_PAGE_LEFT
+                    PageLayout.TwoPageRight -> com.tom_roush.pdfbox.pdmodel.PageLayout.TWO_PAGE_RIGHT
+                }
+                
+                val prefs = catalog.viewerPreferences ?: PDViewerPreferences(doc.documentCatalog.cosObject).also {
+                    catalog.viewerPreferences = it
+                }
+                prefs.setReadingDirection(if (details.isRightToLeft) "R2L" else "L2R")
+                
                 _isDirty.value = true
                 refreshStateInternal()
                 Result.success(Unit)

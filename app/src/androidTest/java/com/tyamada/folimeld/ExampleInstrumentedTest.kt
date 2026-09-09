@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.folimeld_android", appContext.packageName)
+        assertEquals("com.tyamada.folimeld", appContext.packageName)
     }
 }
