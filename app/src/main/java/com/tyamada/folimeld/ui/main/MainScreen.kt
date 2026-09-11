@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -46,6 +47,8 @@ fun MainScreen(
     val thumbnailSize by viewModel.thumbnailSize.collectAsStateWithLifecycle()
     val isProcessing by viewModel.isProcessing.collectAsStateWithLifecycle()
     val isPasswordProtected by viewModel.isPasswordProtected.collectAsStateWithLifecycle()
+    val canUndo by viewModel.canUndo.collectAsStateWithLifecycle()
+    val canRedo by viewModel.canRedo.collectAsStateWithLifecycle()
 
     var lastAttemptedUri by remember { mutableStateOf<Uri?>(null) }
 
@@ -292,6 +295,16 @@ fun MainScreen(
                         }
                         true
                     }
+                    // Ctrl+Z: Undo
+                    isCtrl && !isShift && event.key == Key.Z -> {
+                        if (!isProcessing) viewModel.undo()
+                        true
+                    }
+                    // Ctrl+Y or Ctrl+Shift+Z: Redo
+                    (isCtrl && event.key == Key.Y) || (isCtrl && isShift && event.key == Key.Z) -> {
+                        if (!isProcessing) viewModel.redo()
+                        true
+                    }
                     else -> false
                 }
             } else false
@@ -300,6 +313,18 @@ fun MainScreen(
             TopAppBar(
                 title = { Text("${stringResource(R.string.app_name)} ${if (isDirty) "*" else ""}") },
                 actions = {
+                    IconButton(
+                        onClick = { viewModel.undo() },
+                        enabled = canUndo && !isProcessing
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = "Undo")
+                    }
+                    IconButton(
+                        onClick = { viewModel.redo() },
+                        enabled = canRedo && !isProcessing
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.Redo, contentDescription = "Redo")
+                    }
                     IconButton(onClick = { 
                         if (isDirty) {
                             showDiscardDialog = { openLauncher.launch(arrayOf("application/pdf")) }

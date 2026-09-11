@@ -33,6 +33,12 @@ class MainViewModel @Inject constructor(
     val isPasswordProtected: StateFlow<Boolean> = repository.isPasswordProtected
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
+    val canUndo: StateFlow<Boolean> = repository.canUndo
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    val canRedo: StateFlow<Boolean> = repository.canRedo
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
     private val _selectedIndices = MutableStateFlow<Set<Int>>(emptySet())
     val selectedIndices: StateFlow<Set<Int>> = _selectedIndices.asStateFlow()
 
@@ -128,6 +134,14 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             repository.setPassword(password)
         }
+    }
+
+    fun undo() = runOperation {
+        repository.undo()
+    }
+
+    fun redo() = runOperation {
+        repository.redo()
     }
 
     fun close() {

@@ -30,6 +30,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -53,9 +54,20 @@ class PdfRepositoryImpl @Inject constructor(
     private val _isPasswordProtected = MutableStateFlow(false)
     override val isPasswordProtected = _isPasswordProtected.asStateFlow()
 
+    private val _canUndo = MutableStateFlow(false)
+    override val canUndo = _canUndo.asStateFlow()
+
+    private val _canRedo = MutableStateFlow(false)
+    override val canRedo = _canRedo.asStateFlow()
+
     private var currentDocument: PDDocument? = null
     private var currentUri: Uri? = null
     private var currentPassword: String? = null
+
+    // History management
+    private val history = mutableListOf<File>()
+    private var historyIndex = -1
+    private val MAX_HISTORY = 20
 
     override suspend fun open(uri: Uri, password: String?): Result<Unit> = mutex.withLock {
         withContext(Dispatchers.IO) {
@@ -90,6 +102,9 @@ class PdfRepositoryImpl @Inject constructor(
                 _currentPath.value = uri.path
                 _isDirty.value = false
 
+                clearHistoryInternal()
+                saveHistoryInternal(false) // Initial state, not dirty
+                
                 refreshStateInternal()
                 Result.success(Unit)
             } catch (e: Exception) {
@@ -97,6 +112,78 @@ class PdfRepositoryImpl @Inject constructor(
                 _documentState.value = PdfDocumentState.Error(e.message ?: "Unknown error")
                 Result.failure(e)
             }
+        }
+    }
+
+    private suspend fun saveHistoryInternal(setDirty: Boolean = true) {
+        val doc = currentDocument ?: return
+        
+        // Remove redo steps
+        while (history.size > historyIndex + 1) {
+            history.removeAt(history.size - 1).delete()
+        }
+
+        // Create new history file
+        val tempFile = File(context.cacheDir, "history_${System.currentTimeMillis()}_${history.size}.pdf")
+        doc.save(tempFile)
+        history.add(tempFile)
+        historyIndex++
+
+        // Limit size
+        if (history.size > MAX_HISTORY) {
+            history.removeAt(0).delete()
+            historyIndex--
+        }
+
+        if (setDirty) _isDirty.value = true
+        updateUndoRedoStates()
+    }
+
+    private fun updateUndoRedoStates() {
+        _canUndo.value = historyIndex > 0
+        _canRedo.value = historyIndex < history.size - 1
+    }
+
+    private fun clearHistoryInternal() {
+        history.forEach { it.delete() }
+        history.clear()
+        historyIndex = -1
+        updateUndoRedoStates()
+    }
+
+    override suspend fun undo(): Result<Unit> = mutex.withLock {
+        if (historyIndex <= 0) return@withLock Result.failure(Exception("Cannot undo"))
+        
+        historyIndex--
+        loadFromHistoryInternal()
+    }
+
+    override suspend fun redo(): Result<Unit> = mutex.withLock {
+        if (historyIndex >= history.size - 1) return@withLock Result.failure(Exception("Cannot redo"))
+        
+        historyIndex++
+        loadFromHistoryInternal()
+    }
+
+    private suspend fun loadFromHistoryInternal(): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val file = history[historyIndex]
+            val doc = if (currentPassword != null) {
+                PDDocument.load(file, currentPassword)
+            } else {
+                PDDocument.load(file)
+            }
+            
+            currentDocument?.close()
+            currentDocument = doc
+            _isDirty.value = historyIndex > 0 // Dirty if not at the initial state
+            
+            refreshStateInternal()
+            updateUndoRedoStates()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error loading from history", e)
+            Result.failure(e)
         }
     }
 
@@ -183,6 +270,7 @@ class PdfRepositoryImpl @Inject constructor(
         _documentState.value = PdfDocumentState.Idle
         _isDirty.value = false
         _currentPath.value = null
+        clearHistoryInternal()
     }
 
     override suspend fun save(uri: Uri): Result<Unit> = mutex.withLock {
@@ -193,7 +281,7 @@ class PdfRepositoryImpl @Inject constructor(
                 
                 if (currentPassword != null) {
                     val ap = AccessPermission()
-                    val spp = StandardProtectionPolicy(java.util.UUID.randomUUID().toString(), currentPassword, ap)
+                    val spp = StandardProtectionPolicy(UUID.randomUUID().toString(), currentPassword, ap)
                     spp.encryptionKeyLength = 256
                     doc.protect(spp)
                 }
@@ -204,6 +292,9 @@ class PdfRepositoryImpl @Inject constructor(
                 
                 currentUri = uri
                 _isDirty.value = false
+                // Reset history base to current saved state
+                clearHistoryInternal()
+                saveHistoryInternal(false)
                 Result.success(Unit)
             } catch (e: Exception) {
                 Log.e(TAG, "Error saving PDF", e)
@@ -253,7 +344,8 @@ class PdfRepositoryImpl @Inject constructor(
                 inputStream.close()
                 currentDocument?.close()
                 currentDocument = newDoc
-                _isDirty.value = true
+                
+                saveHistoryInternal()
                 refreshStateInternal()
                 Result.success(Unit)
             } catch (e: Exception) {
@@ -283,7 +375,8 @@ class PdfRepositoryImpl @Inject constructor(
                 
                 currentDocument?.close()
                 currentDocument = newDoc
-                _isDirty.value = true
+                
+                saveHistoryInternal()
                 refreshStateInternal()
                 Result.success(Unit)
             } catch (e: Exception) {
@@ -305,7 +398,8 @@ class PdfRepositoryImpl @Inject constructor(
                 
                 currentDocument?.close()
                 currentDocument = newDoc
-                _isDirty.value = true
+                
+                saveHistoryInternal()
                 refreshStateInternal()
                 Result.success(Unit)
             } catch (e: Exception) {
@@ -327,7 +421,8 @@ class PdfRepositoryImpl @Inject constructor(
                 val newDoc = doc.rebuildWithOrder(order)
                 currentDocument?.close()
                 currentDocument = newDoc
-                _isDirty.value = true
+                
+                saveHistoryInternal()
                 refreshStateInternal()
                 Result.success(Unit)
             } catch (e: Exception) {
@@ -366,7 +461,7 @@ class PdfRepositoryImpl @Inject constructor(
                     val newDoc = doc.rebuildWithOrder(order)
                     currentDocument?.close()
                     currentDocument = newDoc
-                    _isDirty.value = true
+                    saveHistoryInternal()
                     refreshStateInternal()
                 }
                 Result.success(selected.toList().sorted())
@@ -389,7 +484,7 @@ class PdfRepositoryImpl @Inject constructor(
                         page.rotation = (currentRotation + degrees + 360) % 360
                     }
                 }
-                _isDirty.value = true
+                saveHistoryInternal()
                 refreshStateInternal()
                 Result.success(Unit)
             } catch (e: Exception) {
@@ -409,7 +504,8 @@ class PdfRepositoryImpl @Inject constructor(
                 info.author = metadata.author
                 info.subject = metadata.subject
                 info.keywords = metadata.keywords
-                _isDirty.value = true
+                
+                saveHistoryInternal()
                 refreshStateInternal()
                 Result.success(Unit)
             } catch (e: Exception) {
@@ -442,7 +538,7 @@ class PdfRepositoryImpl @Inject constructor(
                 }
                 prefs.setReadingDirection(if (details.isRightToLeft) "R2L" else "L2R")
                 
-                _isDirty.value = true
+                saveHistoryInternal()
                 refreshStateInternal()
                 Result.success(Unit)
             } catch (e: Exception) {
@@ -456,7 +552,7 @@ class PdfRepositoryImpl @Inject constructor(
         withContext(Dispatchers.IO) {
             currentPassword = password
             _isPasswordProtected.value = password != null
-            _isDirty.value = true
+            saveHistoryInternal()
             Result.success(Unit)
         }
     }

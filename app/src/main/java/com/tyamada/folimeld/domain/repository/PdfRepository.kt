@@ -11,10 +11,14 @@ interface PdfRepository {
     val isDirty: Flow<Boolean>
     val currentPath: Flow<String?>
     val isPasswordProtected: Flow<Boolean>
+    val canUndo: Flow<Boolean>
+    val canRedo: Flow<Boolean>
 
     suspend fun open(uri: Uri, password: String? = null): Result<Unit>
     suspend fun close()
     suspend fun save(uri: Uri): Result<Unit>
+    suspend fun undo(): Result<Unit>
+    suspend fun redo(): Result<Unit>
     suspend fun insertPdf(uri: Uri, afterIndex: Int?): Result<Unit>
     suspend fun insertBlankPage(afterIndices: List<Int>): Result<Unit>
     suspend fun deletePages(indices: List<Int>): Result<Unit>
