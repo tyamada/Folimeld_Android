@@ -1,6 +1,6 @@
 # Folimeld for Android
 
-[日本語](README.md) | [English](README_en.md)
+[English](README_en.md) | 日本語 
 
 Folimeld は、PDF のページを見ながら並べ替え、回転、挿入、削除できる Android アプリです。デスクトップ版の機能を Android のモバイル・タブレット環境や Chrome OS 向けに最適化して移植しました。編集するファイルを外部サービスへ送信せず、ローカル環境で処理します。
 

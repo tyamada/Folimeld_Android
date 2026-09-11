@@ -1,6 +1,6 @@
 # Folimeld for Android
 
-[日本語](README.md) | [English](README_en.md)
+English | [日本語](README.md)
 
 Folimeld is an Android application for visually rearranging, rotating, inserting, and deleting PDF pages. Ported from the desktop version and optimized for mobile, tablet, and Chrome OS environments, it processes files locally without sending them to external services.
 
