@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - Folimeld für Android</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        :root {
+            --primary: #d64b75;
+        }
+        main {
+            padding: 2rem 0;
+        }
+        .faq-item {
+            margin-bottom: 2rem;
+        }
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <nav class="container">
+        <ul>
+            <li><strong>Folimeld Support</strong></li>
+        </ul>
+        <ul>
+            <li>
+                <select onchange="window.location.href=this.value" aria-label="Language" style="width: auto; margin-bottom: 0;">
+                    <option value="support_de.html" selected>Deutsch</option>
+                    <option value="support_en.html">English</option>
+                    <option value="support_es.html">Español</option>
+                    <option value="support_fr.html">Français</option>
+                    <option value="support_pt.html">Português</option>
+                    <option value="support.html">日本語</option>
+                    <option value="support_zh.html">简体中文</option>
+                    <option value="support_ko.html">한국어</option>
+                </select>
+            </li>
+            <li><a href="index_de.html">Startseite</a></li>
+            <li><a href="https://github.com/tyamada/Folimeld_Android">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <h1>Support & FAQ</h1>
+
+        <section id="faq">
+            <div class="faq-item">
+                <details open>
+                    <summary><strong>F: Sind meine PDF-Daten sicher?</strong></summary>
+                    <p>Ja. Folimeld basiert auf einer „Local-First“-Philosophie. Ihre PDF-Dateien werden niemals auf Internet-Server hochgeladen. Die gesamte Verarbeitung findet ausschließlich auf Ihrem Android-Gerät statt.</p>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary><strong>F: Ich habe einen Fehler gemacht. Kann ich das rückgängig machen?</strong></summary>
+                    <p>Ja. Sie können bis zu 20 letzte Aktionen über die Schaltfläche „Rückgängig“ in der Symbolleiste oder das Tastaturkürzel <code>Strg + Z</code> rückgängig machen.</p>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary><strong>F: Funktioniert es gut auf Chromebooks?</strong></summary>
+                    <p>Ja. Folimeld verfügt über ein responsives Grid-Layout, das die Platzierung der Vorschaubilder für jede Bildschirmgröße optimiert. Es unterstützt auch Standard-Tastaturkürzel für ein desktop-ähnliches Erlebnis.</p>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary><strong>F: Ich habe einen Fehler gefunden. Wo kann ich ihn melden?</strong></summary>
+                    <p>Fehlerberichte und Funktionsvorschläge sind auf unserer <a href="https://github.com/tyamada/Folimeld_Android/issues">GitHub Issues</a>-Seite willkommen.</p>
+                </details>
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="contact">
+            <h2>Kontakt</h2>
+            <p>Weitere Details zum Quellcode oder zur Lizenzierung finden Sie im GitHub-Repository.</p>
+            <a href="https://github.com/tyamada/Folimeld_Android" role="button" class="secondary">Auf GitHub ansehen</a>
+        </section>
+    </main>
+
+    <footer class="container">
+        <small>
+            &copy; 2026 Takuma Yamada. Lizenziert unter AGPL-3.0.<br>
+            <a href="index_de.html">Zurück zur Startseite</a>
+        </small>
+    </footer>
+</body>
+</html>

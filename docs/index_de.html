@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folimeld für Android - PDFs visuell bearbeiten</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        :root {
+            --primary: #d64b75;
+        }
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+        .icon {
+            width: 128px;
+            height: 128px;
+            margin-bottom: 1rem;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <nav class="container">
+        <ul>
+            <li><strong>Folimeld</strong></li>
+        </ul>
+        <ul>
+            <li>
+                <select onchange="window.location.href=this.value" aria-label="Language" style="width: auto; margin-bottom: 0;">
+                    <option value="index_de.html" selected>Deutsch</option>
+                    <option value="index_en.html">English</option>
+                    <option value="index_es.html">Español</option>
+                    <option value="index_fr.html">Français</option>
+                    <option value="index_pt.html">Português</option>
+                    <option value="index.html">日本語</option>
+                    <option value="index_zh.html">简体中文</option>
+                    <option value="index_ko.html">한국어</option>
+                </select>
+            </li>
+            <li><a href="support_de.html">Support</a></li>
+            <li><a href="https://github.com/tyamada/Folimeld_Android" class="outline">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <section class="hero">
+            <img src="https://raw.githubusercontent.com/tyamada/Folimeld_Android/main/assets/Folimeld.iconset/icon_256x256.png" alt="Folimeld Icon" class="icon">
+            <h1>Folimeld für Android</h1>
+            <p>PDF-Seiten visuell neu anordnen, drehen, einfügen und löschen.</p>
+            <div style="margin-top: 2rem;">
+                <a href="https://github.com/tyamada/Folimeld_Android/releases" role="button">Von GitHub herunterladen</a>
+            </div>
+        </section>
+
+        <section id="features">
+            <h2>Hauptmerkmale</h2>
+            <div class="feature-grid">
+                <article>
+                    <h3>🎨 Visuelle Bearbeitung</h3>
+                    <p>Ordnen Sie PDF-Seiten mithilfe von Vorschaubildern mit intuitiven Drag-and-Drop-ähnlichen Operationen neu an.</p>
+                </article>
+                <article>
+                    <h3>🔄 Stapelverarbeitung</h3>
+                    <p>Wählen Sie mehrere Seiten aus und verschieben, drehen oder löschen Sie diese gleichzeitig. Volle Unterstützung für Rückgängig/Wiederholen (Undo/Redo).</p>
+                </article>
+                <article>
+                    <h3>🔒 Datenschutz an erster Stelle</h3>
+                    <p>Die gesamte Verarbeitung erfolgt lokal auf Ihrem Gerät. Ihre PDF-Dateien werden niemals auf einen Server hochgeladen.</p>
+                </article>
+                <article>
+                    <h3>💻 Optimiert für Tablets & Chromebooks</h3>
+                    <p>Vollständige Unterstützung für große Bildschirme und physische Tastaturen, einschließlich Standardkürzeln wie Strg+S und Strg+Z.</p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer class="container">
+        <small>
+            &copy; 2026 Takuma Yamada. Lizenziert unter AGPL-3.0.<br>
+            <a href="https://github.com/tyamada/Folimeld_Android">GitHub Repository</a> |
+            <a href="support_de.html">Support & FAQ</a>
+        </small>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>支持 - Folimeld for Android</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        :root {
+            --primary: #d64b75;
+        }
+        main {
+            padding: 2rem 0;
+        }
+        .faq-item {
+            margin-bottom: 2rem;
+        }
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <nav class="container">
+        <ul>
+            <li><strong>Folimeld 支持</strong></li>
+        </ul>
+        <ul>
+            <li>
+                <select onchange="window.location.href=this.value" aria-label="Language" style="width: auto; margin-bottom: 0;">
+                    <option value="support_de.html">Deutsch</option>
+                    <option value="support_en.html">English</option>
+                    <option value="support_es.html">Español</option>
+                    <option value="support_fr.html">Français</option>
+                    <option value="support_pt.html">Português</option>
+                    <option value="support.html">日本語</option>
+                    <option value="support_zh.html" selected>简体中文</option>
+                    <option value="support_ko.html">한국어</option>
+                </select>
+            </li>
+            <li><a href="index_zh.html">首页</a></li>
+            <li><a href="https://github.com/tyamada/Folimeld_Android">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <h1>支持与常见问题 (FAQ)</h1>
+
+        <section id="faq">
+            <div class="faq-item">
+                <details open>
+                    <summary><strong>Q: 我的 PDF 数据安全吗？</strong></summary>
+                    <p>是的。Folimeld 基于“本地优先”的设计理念。您的 PDF 文件绝不会被上传到互联网服务器，所有的编辑操作都仅在您的 Android 设备上完成。</p>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary><strong>Q: 我在编辑时出错了。可以撤销吗？</strong></summary>
+                    <p>是的。您可以使用工具栏上的“撤销 (Undo)”按钮，或使用键盘快捷键 <code>Ctrl + Z</code>，最多可撤销最近的 20 步操作。</p>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary><strong>Q: 它在 Chromebook 或平板电脑上运行良好吗？</strong></summary>
+                    <p>是的。Folimeld 采用了响应式网格布局，可根据屏幕大小自动优化缩略图的排列。同时它也完全支持外接键盘快捷键，提供类似桌面端的体验。</p>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary><strong>Q: 我发现了一个 Bug。应该在哪里报告？</strong></summary>
+                    <p>我们非常欢迎在 <a href="https://github.com/tyamada/Folimeld_Android/issues">GitHub Issues</a> 页面提交 Bug 报告或功能建议。</p>
+                </details>
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="contact">
+            <h2>联系我们</h2>
+            <p>有关源代码或许可的更多详情，请访问 GitHub 仓库。</p>
+            <a href="https://github.com/tyamada/Folimeld_Android" role="button" class="secondary">在 GitHub 上查看</a>
+        </section>
+    </main>
+
+    <footer class="container">
+        <small>
+            &copy; 2026 Takuma Yamada. Licensed under AGPL-3.0.<br>
+            <a href="index_zh.html">返回首页</a>
+        </small>
+    </footer>
+</body>
+</html>

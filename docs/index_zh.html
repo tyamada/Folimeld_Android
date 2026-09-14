@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folimeld for Android - 可视化编辑 PDF</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        :root {
+            --primary: #d64b75;
+        }
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+        .icon {
+            width: 128px;
+            height: 128px;
+            margin-bottom: 1rem;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <nav class="container">
+        <ul>
+            <li><strong>Folimeld</strong></li>
+        </ul>
+        <ul>
+            <li>
+                <select onchange="window.location.href=this.value" aria-label="Language" style="width: auto; margin-bottom: 0;">
+                    <option value="index_de.html">Deutsch</option>
+                    <option value="index_en.html">English</option>
+                    <option value="index_es.html">Español</option>
+                    <option value="index_fr.html">Français</option>
+                    <option value="index_pt.html">Português</option>
+                    <option value="index.html">日本語</option>
+                    <option value="index_zh.html" selected>简体中文</option>
+                    <option value="index_ko.html">한국어</option>
+                </select>
+            </li>
+            <li><a href="support_zh.html">支持</a></li>
+            <li><a href="https://github.com/tyamada/Folimeld_Android" class="outline">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <section class="hero">
+            <img src="https://raw.githubusercontent.com/tyamada/Folimeld_Android/main/assets/Folimeld.iconset/icon_256x256.png" alt="Folimeld Icon" class="icon">
+            <h1>Folimeld for Android</h1>
+            <p>可视化地重新排列、旋转、插入和删除 PDF 页面。</p>
+            <div style="margin-top: 2rem;">
+                <a href="https://github.com/tyamada/Folimeld_Android/releases" role="button">从 GitHub 下载</a>
+            </div>
+        </section>
+
+        <section id="features">
+            <h2>主要特性</h2>
+            <div class="feature-grid">
+                <article>
+                    <h3>🎨 直观的可视化编辑</h3>
+                    <p>通过缩略图预览，以类似于拖放的直观方式自由更改页面布局。</p>
+                </article>
+                <article>
+                    <h3>🔄 批量处理多页</h3>
+                    <p>可以同时选择多页进行移动、旋转或删除。完全支持撤销 (Undo) 和重做 (Redo)。</p>
+                </article>
+                <article>
+                    <h3>🔒 隐私优先</h3>
+                    <p>所有处理均在设备本地完成。您的 PDF 文件永远不会被上传到任何外部服务器。</p>
+                </article>
+                <article>
+                    <h3>💻 针对平板电脑和 Chromebook 优化</h3>
+                    <p>支持大屏幕设备和物理键盘，包括 Ctrl+S（保存）和 Ctrl+Z（撤销）等标准快捷键。</p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer class="container">
+        <small>
+            &copy; 2026 Takuma Yamada. Licensed under AGPL-3.0.<br>
+            <a href="https://github.com/tyamada/Folimeld_Android">GitHub 仓库</a> |
+            <a href="support_zh.html">支持与常见问题 (FAQ)</a>
+        </small>
+    </footer>
+</body>
+</html>

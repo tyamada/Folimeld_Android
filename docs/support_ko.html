@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지원 - Folimeld for Android</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        :root {
+            --primary: #d64b75;
+        }
+        main {
+            padding: 2rem 0;
+        }
+        .faq-item {
+            margin-bottom: 2rem;
+        }
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <nav class="container">
+        <ul>
+            <li><strong>Folimeld 지원</strong></li>
+        </ul>
+        <ul>
+            <li>
+                <select onchange="window.location.href=this.value" aria-label="Language" style="width: auto; margin-bottom: 0;">
+                    <option value="support_de.html">Deutsch</option>
+                    <option value="support_en.html">English</option>
+                    <option value="support_es.html">Español</option>
+                    <option value="support_fr.html">Français</option>
+                    <option value="support_pt.html">Português</option>
+                    <option value="support.html">日本語</option>
+                    <option value="support_zh.html">简体中文</option>
+                    <option value="support_ko.html" selected>한국어</option>
+                </select>
+            </li>
+            <li><a href="index_ko.html">홈</a></li>
+            <li><a href="https://github.com/tyamada/Folimeld_Android">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <h1>지원 및 자주 묻는 질문 (FAQ)</h1>
+
+        <section id="faq">
+            <div class="faq-item">
+                <details open>
+                    <summary><strong>Q: PDF 데이터는 안전한가요?</strong></summary>
+                    <p>네. Folimeld는 "로컬 우선(Local First)" 설계 철학을 바탕으로 개발되었습니다. 편집 중인 PDF 파일은 절대 인터넷 서버로 업로드되지 않으며, 모든 작업은 사용자의 Android 기기 내에서만 이루어집니다.</p>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary><strong>Q: 편집 중에 실수를 했습니다. 되돌릴 수 있나요?</strong></summary>
+                    <p>네. 툴바의 "실행 취소(Undo)" 버튼을 클릭하거나 키보드의 <code>Ctrl + Z</code>를 사용하여 최근 작업을 최대 20단계까지 되돌릴 수 있습니다.</p>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary><strong>Q: Chromebook이나 태블릿에서도 잘 작동하나요?</strong></summary>
+                    <p>네. Folimeld는 반응형 그리드 레이아웃을 채택하여 화면 크기에 따라 섬네일 배치가 최적화됩니다. 또한 외장 키보드 단축키를 완벽하게 지원하여 데스크톱과 같은 경험을 제공합니다.</p>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary><strong>Q: 버그를 발견했습니다. 어디에 보고하면 되나요?</strong></summary>
+                    <p>버그 보고 및 새로운 기능 제안은 <a href="https://github.com/tyamada/Folimeld_Android/issues">GitHub Issues</a> 페이지에서 받고 있습니다. 언제든지 의견을 남겨주세요.</p>
+                </details>
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="contact">
+            <h2>문의하기</h2>
+            <p>소스 코드나 라이선스에 대한 자세한 내용은 GitHub 저장소를 확인해 주세요.</p>
+            <a href="https://github.com/tyamada/Folimeld_Android" role="button" class="secondary">GitHub에서 보기</a>
+        </section>
+    </main>
+
+    <footer class="container">
+        <small>
+            &copy; 2026 Takuma Yamada. Licensed under AGPL-3.0.<br>
+            <a href="index_ko.html">홈으로 돌아가기</a>
+        </small>
+    </footer>
+</body>
+</html>

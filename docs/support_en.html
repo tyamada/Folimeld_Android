@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - Folimeld for Android</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        :root {
+            --primary: #d64b75;
+        }
+        main {
+            padding: 2rem 0;
+        }
+        .faq-item {
+            margin-bottom: 2rem;
+        }
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <nav class="container">
+        <ul>
+            <li><strong>Folimeld Support</strong></li>
+        </ul>
+        <ul>
+            <li>
+                <select onchange="window.location.href=this.value" aria-label="Language" style="width: auto; margin-bottom: 0;">
+                    <option value="support_de.html">Deutsch</option>
+                    <option value="support_en.html" selected>English</option>
+                    <option value="support_es.html">Español</option>
+                    <option value="support_fr.html">Français</option>
+                    <option value="support_pt.html">Português</option>
+                    <option value="support.html">日本語</option>
+                    <option value="support_zh.html">简体中文</option>
+                    <option value="support_ko.html">한국어</option>
+                </select>
+            </li>
+            <li><a href="index_en.html">Home</a></li>
+            <li><a href="https://github.com/tyamada/Folimeld_Android">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <h1>Support & FAQ</h1>
+
+        <section id="faq">
+            <div class="faq-item">
+                <details open>
+                    <summary><strong>Q: Is my PDF data secure?</strong></summary>
+                    <p>Yes. Folimeld is built with a "Local First" philosophy. Your PDF files are never uploaded to any Internet servers. All processing happens entirely on your Android device.</p>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary><strong>Q: I made a mistake. Can I undo?</strong></summary>
+                    <p>Yes. You can undo up to 20 recent actions using the "Undo" button on the toolbar or the <code>Ctrl + Z</code> keyboard shortcut.</p>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary><strong>Q: Does it work well on Chromebooks?</strong></summary>
+                    <p>Yes. Folimeld features a responsive grid layout that optimizes thumbnail placement for any screen size. It also supports standard keyboard shortcuts for a desktop-like experience.</p>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary><strong>Q: I found a bug. Where can I report it?</strong></summary>
+                    <p>Bug reports and feature suggestions are welcome on our <a href="https://github.com/tyamada/Folimeld_Android/issues">GitHub Issues</a> page.</p>
+                </details>
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="contact">
+            <h2>Contact</h2>
+            <p>For more details about the source code or licensing, please visit the GitHub repository.</p>
+            <a href="https://github.com/tyamada/Folimeld_Android" role="button" class="secondary">View on GitHub</a>
+        </section>
+    </main>
+
+    <footer class="container">
+        <small>
+            &copy; 2026 Takuma Yamada. Licensed under AGPL-3.0.<br>
+            <a href="index_en.html">Back to Home</a>
+        </small>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistance - Folimeld pour Android</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        :root {
+            --primary: #d64b75;
+        }
+        main {
+            padding: 2rem 0;
+        }
+        .faq-item {
+            margin-bottom: 2rem;
+        }
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <nav class="container">
+        <ul>
+            <li><strong>Assistance Folimeld</strong></li>
+        </ul>
+        <ul>
+            <li>
+                <select onchange="window.location.href=this.value" aria-label="Language" style="width: auto; margin-bottom: 0;">
+                    <option value="support_de.html">Deutsch</option>
+                    <option value="support_en.html">English</option>
+                    <option value="support_es.html">Español</option>
+                    <option value="support_fr.html" selected>Français</option>
+                    <option value="support_pt.html">Português</option>
+                    <option value="support.html">日本語</option>
+                    <option value="support_zh.html">简体中文</option>
+                    <option value="support_ko.html">한국어</option>
+                </select>
+            </li>
+            <li><a href="index_fr.html">Accueil</a></li>
+            <li><a href="https://github.com/tyamada/Folimeld_Android">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <h1>Assistance & FAQ</h1>
+
+        <section id="faq">
+            <div class="faq-item">
+                <details open>
+                    <summary><strong>Q : Mes données PDF sont-elles sécurisées ?</strong></summary>
+                    <p>Oui. Folimeld est construit avec une philosophie « Local First ». Vos fichiers PDF ne sont jamais téléchargés sur des serveurs Internet. Tout le traitement se passe entièrement sur votre appareil Android.</p>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary><strong>Q : J'ai fait une erreur. Puis-je annuler ?</strong></summary>
+                    <p>Oui. Vous pouvez annuler jusqu'à 20 actions récentes en utilisant le bouton « Annuler » sur la barre d'outils ou le raccourci clavier <code>Ctrl + Z</code>.</p>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary><strong>Q : Est-ce que cela fonctionne bien sur les Chromebooks ?</strong></summary>
+                    <p>Oui. Folimeld dispose d'une mise en page en grille réactive qui optimise le placement des miniatures pour n'importe quelle taille d'écran. Il prend également en charge les raccourcis clavier standard pour une expérience de type bureau.</p>
+                </details>
+            </div>
+
+            <div class="faq-item">
+                <details>
+                    <summary><strong>Q : J'ai trouvé un bug. Où puis-je le signaler ?</strong></summary>
+                    <p>Les rapports de bogues et les suggestions de fonctionnalités sont les bienvenus sur notre page <a href="https://github.com/tyamada/Folimeld_Android/issues">GitHub Issues</a>.</p>
+                </details>
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="contact">
+            <h2>Contact</h2>
+            <p>Pour plus de détails sur le code source ou la licence, veuillez visiter le dépôt GitHub.</p>
+            <a href="https://github.com/tyamada/Folimeld_Android" role="button" class="secondary">Voir sur GitHub</a>
+        </section>
+    </main>
+
+    <footer class="container">
+        <small>
+            &copy; 2026 Takuma Yamada. Sous licence AGPL-3.0.<br>
+            <a href="index_fr.html">Retour à l'accueil</a>
+        </small>
+    </footer>
+</body>
+</html>
