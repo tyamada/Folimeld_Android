@@ -75,15 +75,12 @@ class PdfRepositoryImpl @Inject constructor(
                 Log.d(TAG, "Opening PDF: $uri")
                 _documentState.value = PdfDocumentState.Loading
                 
-                val inputStream = context.contentResolver.openInputStream(uri) ?: return@withContext Result.failure(Exception("Failed to open input stream"))
-                val bytes = inputStream.readBytes()
-                inputStream.close()
-
                 val doc = try {
+                    val inputStream = context.contentResolver.openInputStream(uri) ?: return@withContext Result.failure(Exception("Failed to open input stream"))
                     if (password != null) {
-                        PDDocument.load(bytes, password)
+                        PDDocument.load(inputStream, password)
                     } else {
-                        PDDocument.load(bytes)
+                        PDDocument.load(inputStream)
                     }
                 } catch (e: Exception) {
                     if (e.message?.contains("password", ignoreCase = true) == true || e.message?.contains("encrypted", ignoreCase = true) == true) {
@@ -194,14 +191,24 @@ class PdfRepositoryImpl @Inject constructor(
         
         val tempFile = File(context.cacheDir, "temp_${System.currentTimeMillis()}.pdf")
         try {
+            // PdfRenderer doesn't support encrypted PDFs, so we save a decrypted version to temp file.
+            // We use a temporary flag to ensure the saved file is unencrypted for PdfRenderer.
+            val wasEncrypted = doc.isEncrypted
+            if (wasEncrypted) {
+                doc.setAllSecurityToBeRemoved(true)
+            }
             doc.save(tempFile)
+            if (wasEncrypted) {
+                doc.setAllSecurityToBeRemoved(false)
+            }
 
             val pfd = ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY)
             val renderer = PdfRenderer(pfd)
 
             for (i in 0 until renderer.pageCount) {
                 val page = renderer.openPage(i)
-                val scale = 0.5f
+                // Use a smaller scale for thumbnails to save memory (especially for large PDFs)
+                val scale = 0.2f 
                 val bitmap = Bitmap.createBitmap((page.width * scale).toInt(), (page.height * scale).toInt(), Bitmap.Config.ARGB_8888)
                 page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
                 
@@ -218,8 +225,8 @@ class PdfRepositoryImpl @Inject constructor(
             renderer.close()
             pfd.close()
         } catch (e: Exception) {
-            Log.e(TAG, "Error in refreshStateInternal", e)
-            _documentState.value = PdfDocumentState.Error("Failed to render thumbnails: ${e.message}")
+            Log.e(TAG, "Error in refreshStateInternal while rendering thumbnails", e)
+            _documentState.value = PdfDocumentState.Error("Failed to render thumbnails: ${e.localizedMessage}")
             return
         } finally {
             if (tempFile.exists()) tempFile.delete()
