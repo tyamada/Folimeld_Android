@@ -59,4 +59,8 @@
     <string name="close">Đóng</string>
     <string name="apply">Áp dụng</string>
     <string name="licenses">Giấy phép</string>
+    <string name="size_extra_small">Rất nhỏ</string>
+    <string name="size_small">Nhỏ</string>
+    <string name="size_medium">Vừa</string>
+    <string name="size_large">Lớn</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.tyamada.folimeld.ui.properties
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -85,12 +86,17 @@ fun PropertiesScreen(
             Text(stringResource(R.string.details), style = MaterialTheme.typography.titleMedium)
             
             Text(stringResource(R.string.image_size))
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 ThumbnailSize.entries.forEach { size ->
                     FilterChip(
                         selected = currentThumbnailSize == size,
                         onClick = { viewModel.setThumbnailSize(size) },
-                        label = { Text(size.name) }
+                        label = { Text(stringResource(size.labelRes)) }
                     )
                 }
             }

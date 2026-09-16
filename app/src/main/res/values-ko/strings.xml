@@ -59,4 +59,8 @@
     <string name="close">닫기</string>
     <string name="apply">적용</string>
     <string name="licenses">라이선스</string>
+    <string name="size_extra_small">극소</string>
+    <string name="size_small">소</string>
+    <string name="size_medium">중</string>
+    <string name="size_large">대</string>
 </resources>

@@ -59,4 +59,8 @@
     <string name="close">बन्द गर्नुहोस्</string>
     <string name="apply">लागू गर्नुहोस्</string>
     <string name="licenses">इजाजतपत्रहरू</string>
+    <string name="size_extra_small">धेरै सानो</string>
+    <string name="size_small">सानो</string>
+    <string name="size_medium">मध्यम</string>
+    <string name="size_large">ठूलो</string>
 </resources>

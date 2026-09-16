@@ -59,4 +59,8 @@
     <string name="close">Isara</string>
     <string name="apply">I-apply</string>
     <string name="licenses">Mga Lisensya</string>
+    <string name="size_extra_small">Extra Small</string>
+    <string name="size_small">Maliit</string>
+    <string name="size_medium">Katamtaman</string>
+    <string name="size_large">Malaki</string>
 </resources>

@@ -59,4 +59,8 @@
     <string name="close">閉じる</string>
     <string name="apply">適用</string>
     <string name="licenses">ライセンス</string>
+    <string name="size_extra_small">超極小</string>
+    <string name="size_small">小</string>
+    <string name="size_medium">中</string>
+    <string name="size_large">大</string>
 </resources>

@@ -59,4 +59,8 @@
     <string name="close">Cerrar</string>
     <string name="apply">Aplicar</string>
     <string name="licenses">Licencias</string>
+    <string name="size_extra_small">Extra pequeño</string>
+    <string name="size_small">Pequeño</string>
+    <string name="size_medium">Mediano</string>
+    <string name="size_large">Grande</string>
 </resources>

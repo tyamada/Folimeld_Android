@@ -114,7 +114,7 @@ fun MainScreen(
                                 onClick = null
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "${size.name} (${size.dp} dp)")
+                            Text(text = "${stringResource(size.labelRes)} (${size.dp} dp)")
                         }
                     }
                 }
