@@ -1,4 +1,4 @@
-package com.example.folimeld_android
+package com.tyamada.folimeld
 
 import org.junit.Test
 

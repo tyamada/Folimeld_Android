@@ -9,20 +9,33 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import com.tyamada.folimeld.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SupportScreen(
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    viewModel: SupportViewModel = hiltViewModel()
 ) {
+    val isSupporter by viewModel.isSupporter.collectAsState()
+    val price by viewModel.supportProductPrice.collectAsState()
+    val context = LocalContext.current
+    val activity = context.findActivity()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -54,32 +67,34 @@ fun SupportScreen(
                 Icons.Default.Favorite,
                 contentDescription = null,
                 modifier = Modifier.size(64.dp),
-                tint = Color(0xFFD64B75)
+                tint = if (isSupporter) Color(0xFFD64B75) else Color.Gray
             )
             
             Text(
-                text = stringResource(R.string.support_thanks),
+                text = if (isSupporter) "Thank you for being a supporter!" else stringResource(R.string.support_thanks),
                 style = MaterialTheme.typography.headlineSmall,
                 textAlign = TextAlign.Center
             )
             
             Text(
-                text = stringResource(R.string.support_description),
+                text = if (isSupporter) "You have already supported the development. Your contribution is greatly appreciated!" else stringResource(R.string.support_description),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = { /* In-app purchase logic */ },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(stringResource(R.string.support))
+            if (!isSupporter) {
+                Button(
+                    onClick = { activity?.let { viewModel.onSupportClick(it) } },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(price?.let { "${stringResource(R.string.support)} ($it)" } ?: stringResource(R.string.support))
+                }
             }
 
             OutlinedButton(
-                onClick = { /* Refresh logic */ },
+                onClick = { viewModel.onRefreshClick() },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(stringResource(R.string.support_refresh))
@@ -90,4 +105,10 @@ fun SupportScreen(
             }
         }
     }
+}
+
+fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }

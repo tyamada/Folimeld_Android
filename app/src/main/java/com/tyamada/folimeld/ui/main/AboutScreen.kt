@@ -9,9 +9,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import android.content.pm.PackageManager
+import android.os.Build
 import com.tyamada.folimeld.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -19,6 +22,26 @@ import com.tyamada.folimeld.R
 fun AboutScreen(
     onNavigateBack: () -> Unit
 ) {
+    val context = LocalContext.current
+    val packageInfo = try {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.packageManager.getPackageInfo(context.packageName, PackageManager.PackageInfoFlags.of(0))
+        } else {
+            @Suppress("DEPRECATION")
+            context.packageManager.getPackageInfo(context.packageName, 0)
+        }
+    } catch (e: Exception) {
+        null
+    }
+
+    val versionName = packageInfo?.versionName ?: "Unknown"
+    val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        packageInfo?.longVersionCode
+    } else {
+        @Suppress("DEPRECATION")
+        packageInfo?.versionCode?.toLong()
+    } ?: 0L
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -45,7 +68,7 @@ fun AboutScreen(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Version 1.0",
+                text = "Version $versionName ($versionCode)",
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(16.dp))

@@ -1,4 +1,4 @@
-package com.example.folimeld_android
+package com.tyamada.folimeld
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
