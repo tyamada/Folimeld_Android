@@ -9,6 +9,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -200,8 +205,22 @@ fun MainScreen(
             text = {
                 TextField(
                     value = passwordInput,
-                    onValueChange = { passwordInput = it },
-                    label = { Text(stringResource(R.string.enter_password)) }
+                    onValueChange = { passwordInput = it.replace("\n", "").replace("\r", "") },
+                    label = { Text(stringResource(R.string.enter_password)) },
+                    singleLine = true,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            if (passwordInput.isNotEmpty()) {
+                                lastAttemptedUri?.let { viewModel.openPdf(it, passwordInput) }
+                                showPasswordDialog = false
+                            }
+                        }
+                    )
                 )
             },
             confirmButton = {

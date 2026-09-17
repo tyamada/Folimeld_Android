@@ -22,6 +22,7 @@ import com.tom_roush.pdfbox.pdmodel.PDPage
 import com.tom_roush.pdfbox.pdmodel.encryption.AccessPermission
 import com.tom_roush.pdfbox.pdmodel.encryption.StandardProtectionPolicy
 import com.tom_roush.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences
+import com.tom_roush.pdfbox.rendering.PDFRenderer as PDFBoxRenderer
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -76,14 +77,20 @@ class PdfRepositoryImpl @Inject constructor(
                 _documentState.value = PdfDocumentState.Loading
                 
                 val doc = try {
+                    Log.d(TAG, "Attempting to load PDDocument from stream")
                     val inputStream = context.contentResolver.openInputStream(uri) ?: return@withContext Result.failure(Exception("Failed to open input stream"))
                     if (password != null) {
+                        Log.d(TAG, "Loading with password")
                         PDDocument.load(inputStream, password)
                     } else {
+                        Log.d(TAG, "Loading without password")
                         PDDocument.load(inputStream)
                     }
                 } catch (e: Exception) {
-                    if (e.message?.contains("password", ignoreCase = true) == true || e.message?.contains("encrypted", ignoreCase = true) == true) {
+                    Log.w(TAG, "Initial load failed: ${e.message}")
+                    if (e.message?.contains("password", ignoreCase = true) == true || 
+                        e.message?.contains("encrypted", ignoreCase = true) == true ||
+                        e.toString().contains("CryptographyException", ignoreCase = true)) {
                         Log.d(TAG, "Password required for $uri")
                         _documentState.value = PdfDocumentState.PasswordRequired
                         return@withContext Result.success(Unit)
@@ -91,6 +98,7 @@ class PdfRepositoryImpl @Inject constructor(
                     throw e
                 }
 
+                Log.d(TAG, "Document loaded successfully, closing previous document")
                 currentDocument?.close()
                 currentDocument = doc
                 currentUri = uri
@@ -99,10 +107,13 @@ class PdfRepositoryImpl @Inject constructor(
                 _currentPath.value = uri.path
                 _isDirty.value = false
 
+                Log.d(TAG, "Saving initial history")
                 clearHistoryInternal()
                 saveHistoryInternal(false) // Initial state, not dirty
                 
+                Log.d(TAG, "Refreshing state for UI")
                 refreshStateInternal()
+                Log.d(TAG, "Open process completed")
                 Result.success(Unit)
             } catch (e: Exception) {
                 Log.e(TAG, "Error opening PDF", e)
@@ -122,18 +133,35 @@ class PdfRepositoryImpl @Inject constructor(
 
         // Create new history file
         val tempFile = File(context.cacheDir, "history_${System.currentTimeMillis()}_${history.size}.pdf")
-        doc.save(tempFile)
-        history.add(tempFile)
-        historyIndex++
+        try {
+            val wasEncrypted = doc.isEncrypted
+            if (wasEncrypted) {
+                Log.d(TAG, "Removing security for history file")
+                doc.setAllSecurityToBeRemoved(true)
+            }
+            
+            doc.save(tempFile)
+            
+            if (wasEncrypted) {
+                doc.setAllSecurityToBeRemoved(false)
+            }
+            
+            Log.d(TAG, "History file saved: ${tempFile.absolutePath} (${tempFile.length()} bytes)")
+            history.add(tempFile)
+            historyIndex++
 
-        // Limit size
-        if (history.size > MAX_HISTORY) {
-            history.removeAt(0).delete()
-            historyIndex--
+            // Limit size
+            if (history.size > MAX_HISTORY) {
+                history.removeAt(0).delete()
+                historyIndex--
+            }
+
+            if (setDirty) _isDirty.value = true
+            updateUndoRedoStates()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error saving history", e)
+            throw e
         }
-
-        if (setDirty) _isDirty.value = true
-        updateUndoRedoStates()
     }
 
     private fun updateUndoRedoStates() {
@@ -186,50 +214,97 @@ class PdfRepositoryImpl @Inject constructor(
 
     private suspend fun refreshStateInternal() {
         val doc = currentDocument ?: return
-        Log.d(TAG, "Refreshing state for doc with ${doc.numberOfPages} pages")
+        Log.d(TAG, "Refreshing state for doc with ${doc.numberOfPages} pages. Encrypted: ${doc.isEncrypted}")
         val pages = mutableListOf<PdfPage>()
         
         val tempFile = File(context.cacheDir, "temp_${System.currentTimeMillis()}.pdf")
+        var usePdfBoxRenderer = false
+        
         try {
             // PdfRenderer doesn't support encrypted PDFs, so we save a decrypted version to temp file.
-            // We use a temporary flag to ensure the saved file is unencrypted for PdfRenderer.
             val wasEncrypted = doc.isEncrypted
             if (wasEncrypted) {
+                Log.d(TAG, "Document is encrypted, removing security for thumbnail rendering")
                 doc.setAllSecurityToBeRemoved(true)
             }
-            doc.save(tempFile)
-            if (wasEncrypted) {
-                doc.setAllSecurityToBeRemoved(false)
+            
+            try {
+                doc.save(tempFile)
+                Log.d(TAG, "Temp file saved for rendering: ${tempFile.absolutePath} (${tempFile.length()} bytes)")
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to save temp file for PdfRenderer, will fallback to PDFBoxRenderer", e)
+                usePdfBoxRenderer = true
+            } finally {
+                // Restore security state for the document in memory
+                if (wasEncrypted) doc.setAllSecurityToBeRemoved(false)
             }
 
-            val pfd = ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY)
-            val renderer = PdfRenderer(pfd)
+            if (!usePdfBoxRenderer) {
+                val pfd = ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY)
+                val renderer = PdfRenderer(pfd)
 
-            for (i in 0 until renderer.pageCount) {
-                val page = renderer.openPage(i)
-                // Use a smaller scale for thumbnails to save memory (especially for large PDFs)
-                val scale = 0.2f 
-                val bitmap = Bitmap.createBitmap((page.width * scale).toInt(), (page.height * scale).toInt(), Bitmap.Config.ARGB_8888)
-                page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-                
-                val pdPage = doc.getPage(i)
-                pages.add(PdfPage(
-                    index = i,
-                    thumbnail = bitmap,
-                    rotation = pdPage.rotation,
-                    width = page.width.toFloat(),
-                    height = page.height.toFloat()
-                ))
-                page.close()
+                for (i in 0 until renderer.pageCount) {
+                    try {
+                        val page = renderer.openPage(i)
+                        val scale = 0.2f 
+                        val bitmapWidth = (page.width * scale).toInt().coerceAtLeast(1)
+                        val bitmapHeight = (page.height * scale).toInt().coerceAtLeast(1)
+                        
+                        val bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
+                        page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                        
+                        val pdPage = doc.getPage(i)
+                        pages.add(PdfPage(
+                            index = i,
+                            thumbnail = bitmap,
+                            rotation = pdPage.rotation,
+                            width = page.width.toFloat(),
+                            height = page.height.toFloat()
+                        ))
+                        page.close()
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to render page $i with PdfRenderer", e)
+                        // In case of single page failure, we could also try PDFBoxRenderer for this page
+                    }
+                }
+                renderer.close()
+                pfd.close()
             }
-            renderer.close()
-            pfd.close()
         } catch (e: Exception) {
-            Log.e(TAG, "Error in refreshStateInternal while rendering thumbnails", e)
-            _documentState.value = PdfDocumentState.Error("Failed to render thumbnails: ${e.localizedMessage}")
-            return
-        } finally {
-            if (tempFile.exists()) tempFile.delete()
+            Log.e(TAG, "Error using PdfRenderer, switching to PDFBoxRenderer fallback", e)
+            usePdfBoxRenderer = true
+        }
+
+        if (usePdfBoxRenderer) {
+            try {
+                Log.d(TAG, "Starting PDFBoxRenderer fallback")
+                val renderer = PDFBoxRenderer(doc)
+                for (i in 0 until doc.numberOfPages) {
+                    try {
+                        val scale = 0.2f
+                        val bitmap = renderer.renderImage(i, scale)
+                        val pdPage = doc.getPage(i)
+                        pages.add(PdfPage(
+                            index = i,
+                            thumbnail = bitmap,
+                            rotation = pdPage.rotation,
+                            width = pdPage.mediaBox.width,
+                            height = pdPage.mediaBox.height
+                        ))
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to render page $i with PDFBoxRenderer", e)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Fatal error in both renderers", e)
+                _documentState.value = PdfDocumentState.Error("Failed to render thumbnails: ${e.localizedMessage}")
+                return
+            }
+        }
+
+        if (tempFile.exists()) {
+            val deleted = tempFile.delete()
+            Log.d(TAG, "Temp file deleted: $deleted")
         }
 
         val info = doc.documentInformation
